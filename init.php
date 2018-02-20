@@ -444,12 +444,13 @@ class basic_user_avatars {
 	 */
 	public function unique_filename_callback( $dir, $name, $ext ) {
 		$user = get_user_by( 'id', (int) $this->user_id_being_edited );
-		$name = $base_name = sanitize_file_name( $user->display_name . '_avatar' );
-		$number = 1;
+		$build_name = function() use ($user) {
+			return sanitize_file_name( $user->display_name . '_avatar_' . uniqid() );
+		};
+		$name = $base_name = $build_name();
 
 		while ( file_exists( $dir . "/$name$ext" ) ) {
-			$name = $base_name . '_' . $number;
-			$number++;
+			$name = $build_name();
 		}
 
 		return $name . $ext;
